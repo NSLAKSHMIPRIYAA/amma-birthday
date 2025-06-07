@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Happy Birthday Amma</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fff7b3, #ffe066); /* Moderate Yellow */
+      background: linear-gradient(to right, #fff7b3, #ffe066);
       color: #4b2e2e;
       text-align: center;
       min-height: 100vh;
@@ -19,6 +19,9 @@
     .container {
       padding-top: 5vh;
       padding-bottom: 10vh;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
     }
 
     h1 {
@@ -32,24 +35,68 @@
       animation: fadeIn 3s ease-in-out;
     }
 
-    img {
-      width: 250px;
+    /* Carousel styles */
+    .carousel {
+      position: relative;
+      margin: 20px auto;
+      width: 100%;
+      max-width: 400px;
       height: auto;
-      border-radius: 20px;
-      margin-top: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      animation: fadeIn 2.5s ease-in-out;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .carousel img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease-in-out;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Arrows */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5em;
+      color: #d63384;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      line-height: 45px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background-color 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .arrow:hover {
+      background-color: #d63384;
+      color: white;
+    }
+
+    .arrow-left {
+      left: -60px;
+    }
+
+    .arrow-right {
+      right: -60px;
     }
 
     .heart {
       color: red;
       font-size: 2em;
       animation: pulse 1s infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes pulse {
@@ -101,7 +148,7 @@
       position: fixed;
       color: red;
       font-size: 2em;
-      opacity: 1 !important; /* make fully visible */
+      opacity: 1 !important;
       pointer-events: none;
       z-index: 9998;
       animation: floatHeart 5s linear forwards;
@@ -118,7 +165,6 @@
       }
     }
 
-    /* Sparkle style */
     .sparkle {
       position: fixed;
       width: 4px;
@@ -151,11 +197,18 @@
 
   <div class="container">
     <h1>Happy Birthday Amma 🎉</h1>
-    <img src="amma.jpg" alt="My Amma">
-    <p>You are my light, my support, and my everything.<br>
-       This day is yours and you deserve all the happiness!<br>
-       <span class="heart">❤️</span>
+
+    <div class="carousel">
+      <div class="arrow arrow-left" id="prev">&#10094;</div>
+      <img id="carouselImage" src="amma.jpg" alt="My Amma" />
+      <div class="arrow arrow-right" id="next">&#10095;</div>
+    </div>
+
+    <p>You are my light, my support, and my everything.<br />
+      This day is yours and you deserve all the happiness!<br />
+      <span class="heart">❤️</span>
     </p>
+
     <button onclick="playMessage()">Play Voice Message</button>
   </div>
 
@@ -242,7 +295,7 @@
       animateConfetti();
     }
 
-    // Floating Hearts Generator with sparkle effect
+    // Floating Hearts and Sparkles
     function createSparkle(x, y) {
       const sparkle = document.createElement("div");
       sparkle.classList.add("sparkle");
@@ -257,16 +310,12 @@
       heart.classList.add("floating-heart");
       heart.textContent = "❤️";
 
-      // Random position anywhere on screen, horizontally and vertically
       heart.style.left = Math.random() * (window.innerWidth - 30) + "px";
       heart.style.top = Math.random() * (window.innerHeight - 30) + "px";
-
-      // Random font size between 15-25px
       heart.style.fontSize = `${Math.random() * 10 + 15}px`;
 
       document.body.appendChild(heart);
 
-      // Create sparkles around the heart, a few times during the animation
       let sparkleCount = 0;
       const sparkleInterval = setInterval(() => {
         const rect = heart.getBoundingClientRect();
@@ -278,14 +327,38 @@
         if (sparkleCount > 6) clearInterval(sparkleInterval);
       }, 250);
 
-      // Animate the heart float up and then remove after 5s
       heart.style.animation = "floatHeart 5s linear forwards";
       setTimeout(() => {
         heart.remove();
       }, 5000);
     }
 
-    setInterval(createHeart, 800); // One heart every 0.8s
+    setInterval(createHeart, 800);
+
+    // Image carousel logic
+    const images = ['amma.jpg', 'pic2.jpg', 'pic3.jpg', 'pic4.jpg', 'pic5.jpg'];
+    let currentIndex = 0;
+    const carouselImage = document.getElementById('carouselImage');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    function showImage(index) {
+      carouselImage.style.opacity = 0;
+      setTimeout(() => {
+        carouselImage.src = images[index];
+        carouselImage.style.opacity = 1;
+      }, 300);
+    }
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      showImage(currentIndex);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      showImage(currentIndex);
+    });
   </script>
 </body>
 </html>
