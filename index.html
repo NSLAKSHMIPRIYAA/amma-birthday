@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fffbd5, #fefcea); /* soft yellow shades */
+      background: linear-gradient(to right, #fff200, #ffcc00); /* brighter yellows */
       color: #4b2e2e;
       text-align: center;
       overflow-x: hidden;
@@ -67,7 +67,7 @@
       font-size: 1em;
       border: none;
       border-radius: 10px;
-      background-color: #ffc107;
+      background-color: #ffa000;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -75,7 +75,7 @@
     }
 
     button:hover {
-      background-color: #ff9800;
+      background-color: #ff6f00;
     }
 
     canvas {
@@ -119,14 +119,14 @@
       bgm.play();
     });
 
-    // Confetti (lighter)
+    // Confetti (reduced to 65)
     const confettiCanvas = document.getElementById('confetti');
     const ctx = confettiCanvas.getContext('2d');
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
     const confetti = [];
 
-    for (let i = 0; i < 100; i++) {  // Reduced from 300 to 100
+    for (let i = 0; i < 65; i++) {
       confetti.push({
         x: Math.random() * confettiCanvas.width,
         y: Math.random() * confettiCanvas.height,
