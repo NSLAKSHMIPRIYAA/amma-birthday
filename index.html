@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Happy Birthday Amma</title>
   <style>
     body {
@@ -19,9 +19,6 @@
     .container {
       padding-top: 5vh;
       padding-bottom: 10vh;
-      max-width: 600px;
-      margin: 0 auto;
-      position: relative;
     }
 
     h1 {
@@ -35,330 +32,108 @@
       animation: fadeIn 3s ease-in-out;
     }
 
-    /* Carousel styles */
-    .carousel {
+    .image-wrapper {
       position: relative;
-      margin: 20px auto;
-      width: 100%;
-      max-width: 400px;
-      height: auto;
+      display: inline-block;
+      max-width: 90vw;
     }
 
-    .carousel img {
+    #carousel-image {
       width: 100%;
+      max-width: 300px;
       height: auto;
       border-radius: 20px;
+      margin-top: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      animation: fadeIn 1s ease-in-out;
-      user-select: none;
-      pointer-events: none;
+      animation: fadeIn 2.5s ease-in-out;
+      transition: opacity 0.4s ease;
     }
 
-    /* Arrows */
     .arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 2.5em;
-      color: #d63384;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      line-height: 45px;
-      cursor: pointer;
-      user-select: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transition: background-color 0.3s, color 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .arrow:hover {
-      background-color: #d63384;
-      color: white;
-    }
-
-    .arrow-left {
-      left: -60px;
-    }
-
-    .arrow-right {
-      right: -60px;
-    }
-
-    .heart {
-      color: red;
       font-size: 2em;
-      animation: pulse 1s infinite;
+      color: #d63384;
+      background-color: #fff3cd;
+      border-radius: 50%;
+      padding: 5px 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      user-select: none;
+      z-index: 10;
+    }
+
+    .arrow.left {
+      left: -12%;
+    }
+
+    .arrow.right {
+      right: -12%;
+    }
+
+    @media (max-width: 600px) {
+      .arrow.left {
+        left: -8vw;
+      }
+      .arrow.right {
+        right: -8vw;
+      }
+
+      #carousel-image {
+        max-width: 85vw;
+      }
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #ff8fa3;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #ff4e6a;
-    }
-
-    #confettiBtn {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      font-size: 1.5em;
-      padding: 12px 20px;
-      border-radius: 15px;
-      background-color: #fff3cd;
-      color: #d63384;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      z-index: 10000;
-      border: none;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    .floating-heart {
-      position: fixed;
-      color: red;
-      font-size: 2em;
-      opacity: 1 !important;
-      pointer-events: none;
-      z-index: 9998;
-      animation: floatHeart 5s linear forwards;
-    }
-
-    @keyframes floatHeart {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100vh) scale(1.5);
-        opacity: 0;
-      }
-    }
-
-    .sparkle {
-      position: fixed;
-      width: 4px;
-      height: 4px;
-      background: white;
-      border-radius: 50%;
-      box-shadow:
-        0 0 8px 2px white;
-      pointer-events: none;
-      animation: sparkleFade 1.5s ease-in-out forwards;
-      opacity: 0.9;
-      z-index: 10001;
-    }
-
-    @keyframes sparkleFade {
-      0% { opacity: 0.9; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.3); }
-      100% { opacity: 0; transform: scale(0.8); }
-    }
   </style>
 </head>
 <body>
-  <canvas id="confetti"></canvas>
-
-  <!-- Background Music (autoplay, loop) -->
-  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
-
-  <!-- Voice Message -->
-  <audio id="message" src="message.mp3"></audio>
-
   <div class="container">
     <h1>Happy Birthday Amma 🎉</h1>
-
-    <div class="carousel">
-      <div class="arrow arrow-left" id="prev">&#10094;</div>
-      <img id="carouselImage" src="amma.jpg" alt="My Amma" />
-      <div class="arrow arrow-right" id="next">&#10095;</div>
+    <div class="image-wrapper">
+      <div class="arrow left" onclick="changeImage(-1)">❮</div>
+      <img id="carousel-image" src="amma.jpg" alt="My Amma">
+      <div class="arrow right" onclick="changeImage(1)">❯</div>
     </div>
-
-    <p>You are my light, my support, and my everything.<br />
-      This day is yours and you deserve all the happiness!<br />
+    <p>
+      You are my light, my support, and my everything.<br>
+      This day is yours and you deserve all the happiness!<br>
       <span class="heart">❤️</span>
     </p>
-
     <button onclick="playMessage()">Play Voice Message</button>
   </div>
 
-  <button id="confettiBtn" onclick="triggerConfetti()">🎊</button>
-
   <script>
-    const bgm = document.getElementById('bgm');
-    const message = document.getElementById('message');
-    let confettiRunning = false;
-
-    function playMessage() {
-      if (!message.paused) return;
-      bgm.pause();
-      message.play();
-    }
-
-    message.addEventListener('ended', () => {
-      bgm.play();
-    });
-
-    // Confetti Setup
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    let confetti = [];
-
-    function generateConfetti(count = 65) {
-      confetti = [];
-      for (let i = 0; i < count; i++) {
-        confetti.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          r: Math.random() * 6 + 4,
-          d: Math.random() * 5 + 2,
-          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-          tilt: Math.random() * 10 - 10,
-          tiltAngleIncremental: Math.random() * 0.07 + 0.05,
-          tiltAngle: 0,
-          speed: 65 + (Math.random() * 10 - 5)  // speed between 60 and 70 px/s
-        });
-      }
-    }
-
-    function drawConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confetti.forEach((c) => {
-        ctx.beginPath();
-        ctx.lineWidth = c.r;
-        ctx.strokeStyle = c.color;
-        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
-        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
-        ctx.stroke();
-      });
-      updateConfetti();
-    }
-
-    function updateConfetti() {
-      confetti.forEach((c) => {
-        c.tiltAngle += c.tiltAngleIncremental;
-        c.y += c.speed / 60;
-        c.tilt = Math.sin(c.tiltAngle) * 15;
-        if (c.y > canvas.height) {
-          c.y = -10;
-          c.x = Math.random() * canvas.width;
-        }
-      });
-    }
-
-    function animateConfetti() {
-      if (!confettiRunning) return;
-      drawConfetti();
-      requestAnimationFrame(animateConfetti);
-    }
-
-    function triggerConfetti() {
-      generateConfetti(65);
-      confettiRunning = true;
-      animateConfetti();
-    }
-
-    // Floating Hearts and Sparkles
-    function createSparkle(x, y) {
-      const sparkle = document.createElement("div");
-      sparkle.classList.add("sparkle");
-      sparkle.style.left = x + "px";
-      sparkle.style.top = y + "px";
-      document.body.appendChild(sparkle);
-      setTimeout(() => sparkle.remove(), 1500);
-    }
-
-    function createHeart() {
-      const heart = document.createElement("div");
-      heart.classList.add("floating-heart");
-      heart.textContent = "❤️";
-
-      heart.style.left = Math.random() * (window.innerWidth - 30) + "px";
-      heart.style.top = Math.random() * (window.innerHeight - 30) + "px";
-      heart.style.fontSize = `${Math.random() * 10 + 15}px`;
-
-      document.body.appendChild(heart);
-
-      let sparkleCount = 0;
-      const sparkleInterval = setInterval(() => {
-        const rect = heart.getBoundingClientRect();
-        const sparkleX = rect.left + Math.random() * rect.width;
-        const sparkleY = rect.top + Math.random() * rect.height;
-        createSparkle(sparkleX, sparkleY);
-
-        sparkleCount++;
-        if (sparkleCount > 6) clearInterval(sparkleInterval);
-      }, 250);
-
-      heart.style.animation = "floatHeart 5s linear forwards";
-      setTimeout(() => {
-        heart.remove();
-      }, 5000);
-    }
-
-    setInterval(createHeart, 800);
-
-    // Image carousel logic
-    const images = ['amma.jpg', 'pic2.jpg', 'pic3.jpg', 'pic4.jpg', 'pic5.jpg'];
+    const imageList = ["amma.jpg", "pic2.jpg", "pic3.jpg", "pic4.jpg", "pic5.jpg"];
     let currentIndex = 0;
-    const carouselImage = document.getElementById('carouselImage');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
 
-    function showImage(index) {
-      carouselImage.style.opacity = 0;
+    function changeImage(direction) {
+      const img = document.getElementById("carousel-image");
+      img.style.opacity = 0;
+
       setTimeout(() => {
-        carouselImage.src = images[index];
-        carouselImage.style.opacity = 1;
+        currentIndex = (currentIndex + direction + imageList.length) % imageList.length;
+        img.src = imageList[currentIndex];
+        img.style.opacity = 1;
       }, 300);
     }
 
-    prevBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      showImage(currentIndex);
-    });
-
-    nextBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % images.length;
-      showImage(currentIndex);
-    });
+    function playMessage() {
+      const bgm = document.getElementById('bgm');
+      const message = document.getElementById('message');
+      if (!message.paused) return;
+      bgm.pause();
+      message.play();
+      message.onended = () => bgm.play();
+    }
   </script>
+
+  <!-- Optional: Background music and voice message -->
+  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
+  <audio id="message" src="message.mp3"></audio>
 </body>
 </html>
