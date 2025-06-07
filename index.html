@@ -47,18 +47,26 @@
     }
 
     #carousel-container {
-      display: flex;
-      transition: transform 0.6s ease;
-      will-change: transform;
+      position: relative;
+      height: 100%;
     }
 
     #carousel-container img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
       width: 100%;
       max-width: 300px;
       height: auto;
       border-radius: 20px;
-      flex-shrink: 0;
-      user-select: none;
+    }
+
+    #carousel-container img.active {
+      opacity: 1;
+      z-index: 1;
     }
 
     .arrow {
@@ -74,7 +82,6 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       user-select: none;
       z-index: 10;
-      user-select: none;
     }
 
     .arrow.left { left: -12%; }
@@ -83,12 +90,7 @@
     @media (max-width: 600px) {
       .arrow.left { left: -8vw; }
       .arrow.right { right: -8vw; }
-      .image-wrapper {
-        max-height: none;
-      }
-      #carousel-container img {
-        max-width: 85vw;
-      }
+      #carousel-container img { max-width: 85vw; }
     }
 
     button {
@@ -97,7 +99,7 @@
       font-size: 1.1em;
       border: none;
       border-radius: 12px;
-      background-color: #e63946; /* Beautiful red */
+      background-color: #e63946;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -131,7 +133,6 @@
       z-index: 9999;
     }
 
-    /* Floating hearts */
     .heart {
       position: fixed;
       bottom: -30px;
@@ -157,6 +158,25 @@
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .sparkle {
+      position: fixed;
+      font-size: 20px;
+      pointer-events: none;
+      animation: sparkleFade 2s ease-out forwards;
+      z-index: 999;
+    }
+
+    @keyframes sparkleFade {
+      0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2) translateY(-50px);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -168,17 +188,17 @@
     <div class="image-wrapper">
       <div class="arrow left" onclick="changeImage(-1)">❮</div>
       <div id="carousel-container">
-        <img src="amma.jpg" alt="My Amma" />
-        <img src="pic2.jpg" alt="Pic 2" />
-        <img src="pic3.jpg" alt="Pic 3" />
-        <img src="pic4.jpg" alt="Pic 4" />
-        <img src="pic5.jpg" alt="Pic 5" />
+        <img src="amma.jpg" class="active">
+        <img src="pic2.jpg">
+        <img src="pic3.jpg">
+        <img src="pic4.jpg">
+        <img src="pic5.jpg">
       </div>
       <div class="arrow right" onclick="changeImage(1)">❯</div>
     </div>
 
     <p>
-      Happy Birthday to the most incredible woman I’ve ever known. On this special day, I just want to tell you how deeply grateful I am to be your child. You’ve been my first friend, my forever teacher, and my greatest support—even when I didn’t know I needed it.No words will ever truly capture how much you mean to me, but I hope today brings you a piece of the happiness you’ve given me every single day of my life.
+      Happy Birthday to the most incredible woman I’ve ever known. On this special day, I just want to tell you how deeply grateful I am to be your child. You’ve been my first friend, my forever teacher, and my greatest support—even when I didn’t know I needed it.
     </p>
 
     <button onclick="playMessage()">Play Me</button>
@@ -203,15 +223,13 @@
       bgm.play();
     });
 
-    // Image carousel sliding
-    const carousel = document.getElementById("carousel-container");
-    const totalImages = carousel.children.length;
+    const images = document.querySelectorAll("#carousel-container img");
     let currentIndex = 0;
 
     function changeImage(direction) {
-      currentIndex = (currentIndex + direction + totalImages) % totalImages;
-      const offset = -currentIndex * 300; // 300px image width
-      carousel.style.transform = `translateX(${offset}px)`;
+      images[currentIndex].classList.remove("active");
+      currentIndex = (currentIndex + direction + images.length) % images.length;
+      images[currentIndex].classList.add("active");
     }
 
     // Confetti
@@ -232,7 +250,7 @@
         confetti.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height - canvas.height,
-          r: Math.random() * 8 + 6,
+          r: Math.random() * 6 + 4,
           d: Math.random() * 5 + 2,
           color: `hsl(${Math.random() * 360}, 100%, 70%)`,
           tilt: Math.random() * 10 - 10,
@@ -243,36 +261,15 @@
       }
     }
 
-    // Star shape drawing for confetti
-    function drawStar(x, y, r, color) {
-      const spikes = 5;
-      const step = Math.PI / spikes;
-      let rot = Math.PI / 2 * 3;
-      let cx = x;
-      let cy = y;
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - r);
-      for (let i = 0; i < spikes; i++) {
-        let x1 = cx + Math.cos(rot) * r;
-        let y1 = cy + Math.sin(rot) * r;
-        ctx.lineTo(x1, y1);
-        rot += step;
-
-        x1 = cx + Math.cos(rot) * (r / 2);
-        y1 = cy + Math.sin(rot) * (r / 2);
-        ctx.lineTo(x1, y1);
-        rot += step;
-      }
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
     function drawConfetti() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       confetti.forEach((c) => {
-        drawStar(c.x + c.tilt, c.y, c.r, c.color);
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.stroke();
       });
       updateConfetti();
     }
@@ -298,13 +295,12 @@
     }
 
     function triggerConfetti() {
-      generateConfetti(40); // slightly fewer, bigger stars
+      generateConfetti(65);
       confettiRunning = true;
       animateConfetti();
-      setTimeout(() => confettiRunning = false, 5000); // stop confetti after 5s
     }
 
-    // Floating hearts (less)
+    // Floating hearts
     function spawnHeart() {
       const heart = document.createElement("div");
       heart.className = "heart";
@@ -312,13 +308,29 @@
       heart.style.left = Math.random() * 100 + "vw";
       heart.style.fontSize = Math.random() * 15 + 15 + "px";
       document.body.appendChild(heart);
-
       setTimeout(() => heart.remove(), 6000);
     }
 
     setInterval(() => {
-      if (Math.random() < 0.4) spawnHeart(); // control density
+      if (Math.random() < 0.4) spawnHeart();
     }, 600);
+
+    // Sparkles (star shapes)
+    function createSparkle() {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.innerText = "✦";
+      sparkle.style.left = Math.random() * window.innerWidth + "px";
+      sparkle.style.top = Math.random() * window.innerHeight + "px";
+      sparkle.style.color = `hsl(${Math.random() * 360}, 100%, 80%)`;
+      sparkle.style.fontSize = Math.random() * 15 + 18 + "px";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 2000);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.4) createSparkle();
+    }, 700);
   </script>
 </body>
 </html>
