@@ -45,7 +45,6 @@
       border-radius: 20px;
       margin-top: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      animation: fadeIn 2.5s ease-in-out;
       transition: opacity 0.4s ease;
     }
 
@@ -89,9 +88,51 @@
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff8fa3;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff4e6a;
+    }
+
+    #confettiBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      font-size: 1.5em;
+      padding: 12px 20px;
+      border-radius: 15px;
+      background-color: #fff3cd;
+      color: #d63384;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 10000;
+      border: none;
+      cursor: pointer;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
   </style>
 </head>
 <body>
+  <canvas id="confetti"></canvas>
+
   <div class="container">
     <h1>Happy Birthday Amma 🎉</h1>
     <div class="image-wrapper">
@@ -107,7 +148,27 @@
     <button onclick="playMessage()">Play Voice Message</button>
   </div>
 
+  <button id="confettiBtn" onclick="triggerConfetti()">🎊</button>
+
+  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
+  <audio id="message" src="message.mp3"></audio>
+
   <script>
+    // Background music & message
+    const bgm = document.getElementById('bgm');
+    const message = document.getElementById('message');
+
+    function playMessage() {
+      if (!message.paused) return;
+      bgm.pause();
+      message.play();
+    }
+
+    message.addEventListener('ended', () => {
+      bgm.play();
+    });
+
+    // Image carousel
     const imageList = ["amma.jpg", "pic2.jpg", "pic3.jpg", "pic4.jpg", "pic5.jpg"];
     let currentIndex = 0;
 
@@ -122,18 +183,73 @@
       }, 300);
     }
 
-    function playMessage() {
-      const bgm = document.getElementById('bgm');
-      const message = document.getElementById('message');
-      if (!message.paused) return;
-      bgm.pause();
-      message.play();
-      message.onended = () => bgm.play();
+    // Confetti setup
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let confetti = [];
+
+    function generateConfetti(count = 65) {
+      confetti = [];
+      for (let i = 0; i < count; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 5 + 2,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+          tilt: Math.random() * 10 - 10,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+          tiltAngle: 0,
+          speed: Math.random() * 130 + 80  // slower speed: 80–210 px/s
+        });
+      }
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach((c) => {
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.stroke();
+      });
+      updateConfetti();
+    }
+
+    function updateConfetti() {
+      confetti.forEach((c) => {
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += c.speed / 60;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      });
+    }
+
+    let confettiRunning = false;
+
+    function animateConfetti() {
+      if (!confettiRunning) return;
+      drawConfetti();
+      requestAnimationFrame(animateConfetti);
+    }
+
+    function triggerConfetti() {
+      generateConfetti(65);
+      confettiRunning = true;
+      animateConfetti();
     }
   </script>
-
-  <!-- Optional: Background music and voice message -->
-  <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
-  <audio id="message" src="message.mp3"></audio>
 </body>
 </html>
