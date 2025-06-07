@@ -48,6 +48,7 @@
       border-radius: 20px;
       margin-top: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: opacity 0.4s ease;
     }
 
     .arrow {
@@ -125,8 +126,14 @@
     }
 
     @keyframes floatUp {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-100vh) scale(1.8); opacity: 0; }
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.8);
+        opacity: 0;
+      }
     }
 
     @keyframes fadeIn {
@@ -134,21 +141,32 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .sparkle {
+    /* Sparkling star style */
+    .star-sparkle {
       position: fixed;
-      width: 8px;
-      height: 8px;
-      background: radial-gradient(white, transparent);
-      border-radius: 50%;
-      opacity: 0.8;
+      color: #fffacd;
+      font-size: 16px;
+      animation: sparkleStar 1.8s ease-out forwards;
+      opacity: 0.9;
       pointer-events: none;
-      animation: sparkleFade 2s linear forwards;
-      z-index: 3;
+      z-index: 999;
+      filter: drop-shadow(0 0 4px white);
     }
 
-    @keyframes sparkleFade {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(0.5); opacity: 0; }
+    @keyframes sparkleStar {
+      0% {
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.4) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.5) rotate(90deg);
+        opacity: 0;
+        top: calc(100% - 20px);
+      }
     }
   </style>
 </head>
@@ -190,19 +208,22 @@
       bgm.play();
     });
 
-    // 🔁 Updated Image carousel - no delay, no blank screen
+    // Preload images
     const imageList = ["amma.jpg", "pic2.jpg", "pic3.jpg", "pic4.jpg", "pic5.jpg"];
+    const preloadedImages = [];
     let currentIndex = 0;
 
-    function changeImage(direction) {
-      const img = document.getElementById("carousel-image");
-      currentIndex = (currentIndex + direction + imageList.length) % imageList.length;
+    window.onload = () => {
+      imageList.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        preloadedImages.push(img);
+      });
+    };
 
-      const newImg = new Image();
-      newImg.src = imageList[currentIndex] + `?v=${Date.now()}`;
-      newImg.onload = () => {
-        img.src = newImg.src;
-      };
+    function changeImage(direction) {
+      currentIndex = (currentIndex + direction + imageList.length) % imageList.length;
+      document.getElementById("carousel-image").src = preloadedImages[currentIndex].src;
     }
 
     // Confetti
@@ -273,7 +294,7 @@
       animateConfetti();
     }
 
-    // Hearts
+    // Floating hearts
     function spawnHeart() {
       const heart = document.createElement("div");
       heart.className = "heart";
@@ -288,19 +309,21 @@
       if (Math.random() < 0.4) spawnHeart();
     }, 600);
 
-    // Sparkles
-    function spawnSparkle() {
+    // Sparkling stars
+    function spawnStarSparkle() {
       const sparkle = document.createElement("div");
-      sparkle.className = "sparkle";
+      sparkle.className = "star-sparkle";
+      sparkle.innerText = "✦";
       sparkle.style.left = Math.random() * 100 + "vw";
       sparkle.style.top = Math.random() * 100 + "vh";
+      sparkle.style.fontSize = Math.random() * 10 + 14 + "px";
       document.body.appendChild(sparkle);
-      setTimeout(() => sparkle.remove(), 2000);
+      setTimeout(() => sparkle.remove(), 1800);
     }
 
     setInterval(() => {
-      if (Math.random() < 0.2) spawnSparkle();
-    }, 500);
+      if (Math.random() < 0.3) spawnStarSparkle();
+    }, 400);
   </script>
 </body>
 </html>
