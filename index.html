@@ -13,20 +13,25 @@
       color: #4b2e2e;
       text-align: center;
       min-height: 100vh;
+      overflow-x: hidden;
     }
+
     .container {
       padding-top: 5vh;
-      padding-bottom: 10vh; /* space for confetti button */
+      padding-bottom: 10vh;
     }
+
     h1 {
       font-size: 3em;
       animation: fadeIn 2s ease-in-out;
     }
+
     p {
       font-size: 1.5em;
       margin-top: 1em;
       animation: fadeIn 3s ease-in-out;
     }
+
     img {
       width: 250px;
       height: auto;
@@ -35,20 +40,24 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       animation: fadeIn 2.5s ease-in-out;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     .heart {
       color: red;
       font-size: 2em;
       animation: pulse 1s infinite;
     }
+
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.2); }
       100% { transform: scale(1); }
     }
+
     button {
       margin-top: 20px;
       padding: 10px 20px;
@@ -61,6 +70,7 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #ff4e6a;
     }
@@ -86,12 +96,32 @@
       pointer-events: none;
       z-index: 9999;
     }
+
+    .floating-heart {
+      position: fixed;
+      color: red;
+      font-size: 2em;
+      animation: floatHeart 5s linear infinite;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    @keyframes floatHeart {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
   <canvas id="confetti"></canvas>
 
-  <!-- Background Music (autoplay, loop, hidden player) -->
+  <!-- Background Music (autoplay, loop) -->
   <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
 
   <!-- Voice Message -->
@@ -143,7 +173,7 @@
           tilt: Math.random() * 10 - 10,
           tiltAngleIncremental: Math.random() * 0.07 + 0.05,
           tiltAngle: 0,
-          speed: 50
+          speed: 80 // 💨 Faster than before
         });
       }
     }
@@ -184,6 +214,22 @@
       confettiRunning = true;
       animateConfetti();
     }
+
+    // Floating Hearts Generator
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("floating-heart");
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.fontSize = `${Math.random() * 10 + 15}px`;
+      document.body.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+
+    setInterval(createHeart, 800); // ❤️ One heart every 0.8s
   </script>
 </body>
 </html>
