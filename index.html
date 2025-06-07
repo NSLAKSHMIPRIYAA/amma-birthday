@@ -9,73 +9,74 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fff200, #ffcc00); /* brighter yellows */
+      background: linear-gradient(to right, #fff7b3, #ffe066); /* Moderate Yellow */
       color: #4b2e2e;
       text-align: center;
-      overflow-x: hidden;
-      overflow-y: auto;
       min-height: 100vh;
     }
-
     .container {
-      margin: 5% auto;
-      padding: 20px;
-      max-width: 600px;
+      padding-top: 5vh;
+      padding-bottom: 10vh; /* space for confetti button */
     }
-
     h1 {
-      font-size: 2.5em;
+      font-size: 3em;
       animation: fadeIn 2s ease-in-out;
     }
-
     p {
-      font-size: 1.3em;
+      font-size: 1.5em;
       margin-top: 1em;
       animation: fadeIn 3s ease-in-out;
     }
-
     img {
-      width: 100%;
-      max-width: 250px;
+      width: 250px;
       height: auto;
       border-radius: 20px;
       margin-top: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       animation: fadeIn 2.5s ease-in-out;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .heart {
       color: red;
       font-size: 2em;
       animation: pulse 1s infinite;
     }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.2); }
       100% { transform: scale(1); }
     }
-
     button {
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 1em;
       border: none;
       border-radius: 10px;
-      background-color: #ffa000;
+      background-color: #ff8fa3;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       transition: background-color 0.3s;
     }
-
     button:hover {
-      background-color: #ff6f00;
+      background-color: #ff4e6a;
+    }
+
+    #confettiBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      font-size: 1.5em;
+      padding: 12px 20px;
+      border-radius: 15px;
+      background-color: #fff3cd;
+      color: #d63384;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 10000;
+      border: none;
     }
 
     canvas {
@@ -89,10 +90,11 @@
 </head>
 <body>
   <canvas id="confetti"></canvas>
-  <canvas id="sparkles"></canvas>
 
-  <!-- Background Music (autoplay, loop) -->
+  <!-- Background Music (autoplay, loop, hidden player) -->
   <audio id="bgm" src="bgm.mp3" autoplay loop></audio>
+
+  <!-- Voice Message -->
   <audio id="message" src="message.mp3"></audio>
 
   <div class="container">
@@ -105,9 +107,12 @@
     <button onclick="playMessage()">Play Voice Message</button>
   </div>
 
+  <button id="confettiBtn" onclick="triggerConfetti()">🎊</button>
+
   <script>
     const bgm = document.getElementById('bgm');
     const message = document.getElementById('message');
+    let confettiRunning = false;
 
     function playMessage() {
       if (!message.paused) return;
@@ -119,28 +124,32 @@
       bgm.play();
     });
 
-    // Confetti (reduced to 65)
-    const confettiCanvas = document.getElementById('confetti');
-    const ctx = confettiCanvas.getContext('2d');
-    confettiCanvas.width = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
-    const confetti = [];
+    // Confetti Setup
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let confetti = [];
 
-    for (let i = 0; i < 65; i++) {
-      confetti.push({
-        x: Math.random() * confettiCanvas.width,
-        y: Math.random() * confettiCanvas.height,
-        r: Math.random() * 6 + 4,
-        d: Math.random() * 5 + 2,
-        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-        tilt: Math.random() * 10 - 10,
-        tiltAngleIncremental: Math.random() * 0.07 + 0.05,
-        tiltAngle: 0
-      });
+    function generateConfetti(count = 65) {
+      confetti = [];
+      for (let i = 0; i < count; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 5 + 2,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+          tilt: Math.random() * 10 - 10,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+          tiltAngle: 0,
+          speed: 50
+        });
+      }
     }
 
     function drawConfetti() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       confetti.forEach((c) => {
         ctx.beginPath();
         ctx.lineWidth = c.r;
@@ -155,66 +164,26 @@
     function updateConfetti() {
       confetti.forEach((c) => {
         c.tiltAngle += c.tiltAngleIncremental;
-        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.y += c.speed / 60;
         c.tilt = Math.sin(c.tiltAngle) * 15;
-        if (c.y > confettiCanvas.height) {
+        if (c.y > canvas.height) {
           c.y = -10;
-          c.x = Math.random() * confettiCanvas.width;
+          c.x = Math.random() * canvas.width;
         }
       });
     }
 
     function animateConfetti() {
+      if (!confettiRunning) return;
       drawConfetti();
       requestAnimationFrame(animateConfetti);
     }
 
-    animateConfetti();
-
-    // Sparkles ✨
-    const sparkleCanvas = document.getElementById('sparkles');
-    const sparkleCtx = sparkleCanvas.getContext('2d');
-    sparkleCanvas.width = window.innerWidth;
-    sparkleCanvas.height = window.innerHeight;
-
-    const sparkles = Array.from({ length: 60 }, () => ({
-      x: Math.random() * sparkleCanvas.width,
-      y: Math.random() * sparkleCanvas.height,
-      r: Math.random() * 1.5 + 0.5,
-      alpha: Math.random(),
-      speed: Math.random() * 0.5 + 0.2
-    }));
-
-    function drawSparkles() {
-      sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
-      sparkles.forEach(s => {
-        sparkleCtx.beginPath();
-        sparkleCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        sparkleCtx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
-        sparkleCtx.fill();
-      });
+    function triggerConfetti() {
+      generateConfetti(65);
+      confettiRunning = true;
+      animateConfetti();
     }
-
-    function updateSparkles() {
-      sparkles.forEach(s => {
-        s.alpha += (Math.random() - 0.5) * 0.05;
-        if (s.alpha < 0.1) s.alpha = 0.1;
-        if (s.alpha > 1) s.alpha = 1;
-        s.y -= s.speed;
-        if (s.y < 0) {
-          s.y = sparkleCanvas.height;
-          s.x = Math.random() * sparkleCanvas.width;
-        }
-      });
-    }
-
-    function animateSparkles() {
-      drawSparkles();
-      updateSparkles();
-      requestAnimationFrame(animateSparkles);
-    }
-
-    animateSparkles();
   </script>
 </body>
 </html>
