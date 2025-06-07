@@ -156,16 +156,15 @@
     @keyframes sparkleStar {
       0% {
         transform: scale(0.5) rotate(0deg);
-        opacity: 0.7;
+        opacity: 0.6;
       }
       50% {
-        transform: scale(1.4) rotate(45deg);
+        transform: scale(1.2) rotate(45deg);
         opacity: 1;
       }
       100% {
-        transform: scale(0.5) rotate(90deg);
+        transform: scale(0.6) rotate(90deg);
         opacity: 0;
-        top: calc(100% - 20px);
       }
     }
   </style>
@@ -208,7 +207,6 @@
       bgm.play();
     });
 
-    // Preload images
     const imageList = ["amma.jpg", "pic2.jpg", "pic3.jpg", "pic4.jpg", "pic5.jpg"];
     const preloadedImages = [];
     let currentIndex = 0;
@@ -226,7 +224,6 @@
       document.getElementById("carousel-image").src = preloadedImages[currentIndex].src;
     }
 
-    // Confetti
     const canvas = document.getElementById('confetti');
     const ctx = canvas.getContext('2d');
     function resizeCanvas() {
