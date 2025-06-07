@@ -101,9 +101,10 @@
       position: fixed;
       color: red;
       font-size: 2em;
-      animation: floatHeart 5s linear infinite;
+      opacity: 1 !important; /* make fully visible */
       pointer-events: none;
       z-index: 9998;
+      animation: floatHeart 5s linear forwards;
     }
 
     @keyframes floatHeart {
@@ -115,6 +116,27 @@
         transform: translateY(-100vh) scale(1.5);
         opacity: 0;
       }
+    }
+
+    /* Sparkle style */
+    .sparkle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      box-shadow:
+        0 0 8px 2px white;
+      pointer-events: none;
+      animation: sparkleFade 1.5s ease-in-out forwards;
+      opacity: 0.9;
+      z-index: 10001;
+    }
+
+    @keyframes sparkleFade {
+      0% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+      100% { opacity: 0; transform: scale(0.8); }
     }
   </style>
 </head>
@@ -157,8 +179,13 @@
     // Confetti Setup
     const canvas = document.getElementById('confetti');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
     let confetti = [];
 
     function generateConfetti(count = 65) {
@@ -173,7 +200,7 @@
           tilt: Math.random() * 10 - 10,
           tiltAngleIncremental: Math.random() * 0.07 + 0.05,
           tiltAngle: 0,
-          speed: 80 // 💨 Faster than before
+          speed: Math.random() * 300 + 200 // MUCH faster speed (200 - 500 px/s)
         });
       }
     }
@@ -215,21 +242,50 @@
       animateConfetti();
     }
 
-    // Floating Hearts Generator
+    // Floating Hearts Generator with sparkle effect
+    function createSparkle(x, y) {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      sparkle.style.left = x + "px";
+      sparkle.style.top = y + "px";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1500);
+    }
+
     function createHeart() {
       const heart = document.createElement("div");
       heart.classList.add("floating-heart");
       heart.textContent = "❤️";
-      heart.style.left = Math.random() * window.innerWidth + "px";
+
+      // Random position anywhere on screen, horizontally and vertically
+      heart.style.left = Math.random() * (window.innerWidth - 30) + "px";
+      heart.style.top = Math.random() * (window.innerHeight - 30) + "px";
+
+      // Random font size between 15-25px
       heart.style.fontSize = `${Math.random() * 10 + 15}px`;
+
       document.body.appendChild(heart);
 
+      // Create sparkles around the heart, a few times during the animation
+      let sparkleCount = 0;
+      const sparkleInterval = setInterval(() => {
+        const rect = heart.getBoundingClientRect();
+        const sparkleX = rect.left + Math.random() * rect.width;
+        const sparkleY = rect.top + Math.random() * rect.height;
+        createSparkle(sparkleX, sparkleY);
+
+        sparkleCount++;
+        if (sparkleCount > 6) clearInterval(sparkleInterval);
+      }, 250);
+
+      // Animate the heart float up and then remove after 5s
+      heart.style.animation = "floatHeart 5s linear forwards";
       setTimeout(() => {
         heart.remove();
       }, 5000);
     }
 
-    setInterval(createHeart, 800); // ❤️ One heart every 0.8s
+    setInterval(createHeart, 800); // One heart every 0.8s
   </script>
 </body>
 </html>
